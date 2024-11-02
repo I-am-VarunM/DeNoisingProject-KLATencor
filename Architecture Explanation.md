@@ -1,118 +1,139 @@
-1. Base Architecture Choice: UNet
-We chose UNet as the base architecture because:
+# Image Restoration Model with Defect Preservation
 
-Its encoder-decoder structure is excellent for image-to-image translation tasks
-Skip connections help preserve spatial information which is crucial for defect preservation
-The architecture can handle both local and global features effectively
-It has proven success in medical image segmentation where preserving small details is critical
+## Architecture Details and Design Choices
 
-2. Architectural Modifications
-2.1 Channel Attention Mechanism
-Added CBAM-style attention because:
+### Base Architecture Selection: UNet
+I chose UNet as the base architecture for several key reasons:
+- The encoder-decoder structure is ideal for image-to-image translation tasks
+- Built-in skip connections help preserve essential spatial information
+- Effective handling of both local and global features
+- Proven track record in medical image segmentation where detail preservation is crucial
 
-Helps the model focus on relevant features in both clean and defect areas
-Adaptively recalibrates channel-wise feature responses
-Particularly useful for defect regions which might have subtle features
+### Key Modifications to Base Architecture
 
-pythonCopyclass ChannelAttention(nn.Module):
+#### 1. Channel Attention Mechanism
+Implementation of CBAM-style attention because:
+- Helps the model focus on important features in both clean and defect areas
+- Adaptively recalibrates channel-wise feature responses
+- Particularly effective for identifying subtle defect features
+
+```python
+class ChannelAttention(nn.Module):
     def __init__(self, channels, reduction_ratio=16):
-        # Using both max and average pooling provides comprehensive feature information
+        # Dual pooling for comprehensive feature information
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.max_pool = nn.AdaptiveMaxPool2d(1)
-2.2 Skip Connections
-Modified the original UNet skip connections because:
+```
 
-Added controllable skip connections with [False, False, False, False] configuration
-This modification helps balance feature propagation
-Prevents excessive low-level feature transfer which could affect defect restoration
-Allows the model to selectively use features from encoder layers
+#### 2. Modified Skip Connections
+Enhanced the original UNet skip connections:
+- Implemented controllable skip connections with [False, False, False, False] configuration
+- Balanced feature propagation
+- Prevented excessive low-level feature transfer
+- Enabled selective feature utilization from encoder layers
 
-2.3 Defect-Aware Processing
-Added mask attention mechanism because:
-
-Helps the model process defect and non-defect regions differently
-Preserves defect characteristics while still denoising the overall image
-Allows for adaptive processing based on defect location
-
-pythonCopyself.mask_attention = nn.Sequential(
+#### 3. Defect-Aware Processing
+Added specialized mask attention:
+```python
+self.mask_attention = nn.Sequential(
     nn.Conv2d(1, 64, 3, padding=1),
     nn.ReLU(inplace=True),
     nn.Conv2d(64, 1, 1),
     nn.Sigmoid()
 )
-3. Loss Function Design
-We designed a custom multi-component loss function because different aspects of the restoration need different types of supervision:
-3.1 Components and Their Purposes
-pythonCopytotal_loss = (0.25 * defect_loss +     
+```
+Benefits:
+- Separate processing for defect and non-defect regions
+- Enhanced defect preservation during restoration
+- Adaptive processing based on defect location
+
+### Custom Loss Function Design
+
+Implemented a multi-component loss function:
+```python
+total_loss = (0.25 * defect_loss +     
               0.30 * ssim_loss +        
               0.20 * perceptual_loss +  
               0.15 * edge_loss +        
-              0.10 * basic_loss)
+              0.10 * basic_loss)        
+```
 
-Defect Loss (weight: 0.25):
+#### Loss Components:
 
-Focuses on preserving defect regions
-Uses weighted mask to give more importance to defect areas
-Helps maintain defect characteristics
+1. **Defect Loss (0.25)**
+   - Priority focus on defect regions
+   - Weighted mask for defect emphasis
+   - Maintains defect characteristics
 
+2. **SSIM Loss (0.30)**
+   - Ensures structural similarity
+   - Highest weight for balanced restoration
+   - Critical for overall image quality
 
-SSIM Loss (weight: 0.30):
+3. **Perceptual Loss (0.20)**
+   - VGG-based feature extraction
+   - Maintains perceptual quality
+   - Natural-looking results
 
-Ensures structural similarity with ground truth
-Particularly important for overall image quality
-Highest weight because it balances structure and perception
+4. **Edge Loss (0.15)**
+   - Edge information preservation
+   - Critical for defect boundaries
+   - Sobel filter implementation
 
+5. **Basic Loss (0.10)**
+   - L1 and MSE combination
+   - Basic pixel-level supervision
+   - Foundation for other losses
 
-Perceptual Loss (weight: 0.20):
+### Training Strategy
 
-Uses VGG features to capture high-level content
-Helps maintain perceptual quality
-Important for natural-looking results
+- **Optimizer**: AdamW with 1e-4 learning rate
+- **Scheduler**: CosineAnnealingWarmRestarts
+- **Regularization**: Dropout rate 0.15
+- **Early Stopping**: Patience of 25 epochs
+- **Batch Size**: 8 for stable training
 
+### Results
 
-Edge Loss (weight: 0.15):
+#### Overall Performance
+- PSNR: 26.09 dB
+- SSIM: 0.74
 
-Preserves edge information
-Critical for defect boundaries
-Uses Sobel filters for edge detection
+#### Defect Region Performance
+- Defect PSNR: 42.95 dB
+- Defect SSIM: 0.99
 
+These metrics demonstrate:
+- Excellent defect preservation
+- Strong overall image restoration
+- Well-balanced performance
 
-Basic Loss (weight: 0.10):
+### Required Packages
+```
+torch >= 2.0.0
+torchvision >= 0.15.0
+Pillow >= 9.5.0
+opencv-python >= 4.7.0
+numpy >= 1.24.3
+matplotlib >= 3.7.1
+tqdm >= 4.65.0
+```
 
-Combination of L1 and MSE loss
-Provides pixel-level supervision
-Lower weight as it's less important than structural features
+### Implementation
 
+- **GitHub Repository**: [Repository Link Placeholder]
+- **Model Weights**: [Weights Link Placeholder]
 
+### References
 
-4. Training Strategy
+1. UNet Original Paper:
+   - Title: "U-Net: Convolutional Networks for Biomedical Image Segmentation"
+   - Authors: Ronneberger et al.
+   - Conference: MICCAI 2015
 
-Used AdamW optimizer with learning rate 1e-4
-Implemented CosineAnnealingWarmRestarts scheduler for better convergence
-Added dropout (0.15) for regularization
-Early stopping with patience of 25 epochs
-Batch size of 8 for stable training
+2. CBAM Paper:
+   - Title: "CBAM: Convolutional Block Attention Module"
+   - Authors: Woo et al.
+   - Conference: ECCV 2018
 
-5. Results and Metrics
-Our model achieved:
-
-Overall PSNR: 29.89 dB
-Overall SSIM: 0.76
-Defect PSNR: 42.95 dB
-Defect SSIM: 0.99
-
-These results show:
-
-Strong defect preservation (high defect metrics)
-Good overall image restoration
-Balanced performance between cleanup and defect preservation
-
-6. References
-
-UNet: "U-Net: Convolutional Networks for Biomedical Image Segmentation" by Ronneberger et al.
-CBAM: "CBAM: Convolutional Block Attention Module" by Woo et al.
-[Add other papers you referenced]
-
-7. Implementation
-The complete implementation is available at: https://github.com/I-am-VarunM/DeNoisingProject-KLATencor
-Model weights: https://drive.google.com/file/d/1izxVWqllWJ5hQe9SDaDji94gqBzTIlvo/view?usp=sharing
+[Additional references as needed]
