@@ -1,0 +1,11 @@
+
+Epoch 21:
+
+Best Epoch: 26
+
+Final Metrics:
+Training Loss: 0.0551
+psnr: 29.9035
+ssim: 0.7375
+defect_psnr: 42.705745697021484
+defect_ssim: 0.9906

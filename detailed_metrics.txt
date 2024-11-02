@@ -1,0 +1,100 @@
+Object-wise Metrics:
+--------------------------------------------------
+
+bottle:
+psnr: 22.3019
+ssim: 0.8249
+defect_psnr: 39.4331
+defect_ssim: 0.9902
+
+cable:
+psnr: 25.7924
+ssim: 0.8222
+defect_psnr: 40.0754
+defect_ssim: 0.9902
+
+capsule:
+psnr: 18.9675
+ssim: 0.7139
+defect_psnr: 50.6773
+defect_ssim: 0.9996
+
+carpet:
+psnr: 20.5037
+ssim: 0.4502
+defect_psnr: 40.3671
+defect_ssim: 0.9914
+
+grid:
+psnr: 24.6102
+ssim: 0.7619
+defect_psnr: 45.4659
+defect_ssim: 0.9983
+
+hazelnut:
+psnr: 30.4636
+ssim: 0.9012
+defect_psnr: 37.7848
+defect_ssim: 0.9882
+
+leather:
+psnr: 26.1491
+ssim: 0.3501
+defect_psnr: 46.0716
+defect_ssim: 0.9974
+
+metal_nut:
+psnr: 28.0669
+ssim: 0.8077
+defect_psnr: 42.2526
+defect_ssim: 0.9909
+
+pill:
+psnr: 31.6591
+ssim: 0.9271
+defect_psnr: 46.1468
+defect_ssim: 0.9836
+
+screw:
+psnr: 27.4573
+ssim: 0.8330
+defect_psnr: 50.2147
+defect_ssim: 0.9996
+
+tile:
+psnr: 24.7966
+ssim: 0.7121
+defect_psnr: 37.1942
+defect_ssim: 0.9755
+
+toothbrush:
+psnr: 29.1778
+ssim: 0.8778
+defect_psnr: 43.7015
+defect_ssim: 0.9952
+
+transistor:
+psnr: 28.9755
+ssim: 0.8921
+defect_psnr: 42.3818
+defect_ssim: 0.9808
+
+wood:
+psnr: 26.3497
+ssim: 0.6042
+defect_psnr: 39.9948
+defect_ssim: 0.9936
+
+zipper:
+psnr: 26.2046
+ssim: 0.6402
+defect_psnr: 42.4959
+defect_ssim: 0.9940
+
+--------------------------------------------------
+
+Overall Averages:
+psnr: 26.0984
+ssim: 0.7412
+defect_psnr: 42.9505
+defect_ssim: 0.9912
